@@ -35,6 +35,13 @@ export interface User {
   github: string;
 }
 
+export interface UserEditable {
+   id: UserId
+  name?: string;
+  email?: string;
+  github?: string;
+}
+
 export interface UserWithId extends User {
   id: UserId
 }
@@ -64,6 +71,12 @@ export const usersSlice = createSlice({
         {id,...action.payload}
       ]
     },
+    editUser: (state,action:PayloadAction<UserEditable>) => {
+      const { id, ...changes } = action.payload;
+      return state.map(user =>
+        user.id === id ? { ...user, ...changes } : user
+      );
+    },
     rollbackUser: (state, action: PayloadAction<UserWithId>) => {
       const user = state.some(user => user.id === action.payload.id)
       if(!user) return [...state,action.payload]
@@ -74,4 +87,4 @@ export const usersSlice = createSlice({
 
 export default usersSlice.reducer;
 
-export const {addNewUser, deleteUserById,rollbackUser}=usersSlice.actions
+export const {addNewUser, deleteUserById,rollbackUser,editUser}=usersSlice.actions
